@@ -1,6 +1,7 @@
 # Mechanism Designer
 
 ![tests](https://github.com/ryanch3nn/mechanism-designer/actions/workflows/tests.yml/badge.svg)
+[![Open the app](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mechanism-designer-qih2vn74d64motisrwxywc.streamlit.app/)
 
 Python tools for two of the most common problems in machine design:
 
@@ -15,7 +16,7 @@ Every result is checked against a hand calculation in the test suite.
 
 ## Interactive app
 
-Type in your numbers and watch the mechanism move. The app explains every check in plain English and shows each formula with your numbers plugged in.
+**[▶ Try it in your browser](https://mechanism-designer-qih2vn74d64motisrwxywc.streamlit.app/)**, no install needed. Type in your numbers and watch the mechanism move. The app explains every check in plain English and shows each formula with your numbers plugged in.
 
 ![Four-bar linkage tab](docs/img/app.png)
 
