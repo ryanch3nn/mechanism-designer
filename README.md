@@ -13,6 +13,28 @@ Every result is checked against a hand calculation in the test suite.
 
 ---
 
+## Interactive app
+
+Type in your numbers and watch the mechanism move. The app explains every check in plain English and shows each formula with your numbers plugged in.
+
+![Four-bar linkage tab](docs/img/app.png)
+
+- **Start from a real machine**: windshield wiper, quick-return shaper, walking robot leg, toggle clamp, drag-link, robot arm gearbox, conveyor, winch, clock, wind turbine.
+- **Animated linkage** with the coupler curve traced, plus angular velocity, transmission angle, torque amplification and output angle over a full turn.
+- **Inspect any crank angle** to get θ₃, θ₄, ω₃, ω₄, μ and the speed of the coupler point there. Handy for checking homework.
+- **Gearbox designer**: enter motor speed and the output speed you want, and it picks the tooth counts, checks for interference, and tells you whether the output torque is enough for your load. Or switch to **Check my own gears**.
+- **Spinning gear preview**: every gear's speed relative to the others is exact.
+- **Share a design** by copying the URL, since every input is saved in the link. **Download** the sweep as CSV or the gear dimensions for CAD.
+
+![Gearbox designer tab](docs/img/app_gears.png)
+
+```bash
+pip install -e ".[app]"
+streamlit run app.py              # opens http://localhost:8501
+```
+
+---
+
 ## Quick start
 
 ```bash
@@ -20,6 +42,7 @@ git clone https://github.com/ryanch3nn/mechanism-designer.git
 cd mechanism-designer
 pip install -e ".[dev]"
 
+streamlit run app.py              # interactive app
 python examples/fourbar_demo.py   # analysis plots + GIF -> docs/img/
 python examples/gear_demo.py      # designs a 30:1 gearbox
 pytest                            # run the test suite
@@ -124,14 +147,18 @@ At $\phi = 20°$ this gives 13 teeth for a 1:1 mesh and 18 teeth against a rack.
 | Loop closure over a full turn | \|AB\| = r₃ and \|O₄B\| = r₄ at every angle |
 | 20→60, 15→45 compound train | e = 9, T_out = 9 · 0.98² · T_in, C = m(N₁ + N₂)/2 |
 | Minimum pinion teeth | 13 (1:1), 16 (4:1), 18 (rack), matching Shigley |
+| Quick-return time ratio, (90, 30, 60, 100) | closed form matches where the swept rocker reverses: Q = 1.452 |
+| Gear dimensions, 20T at m = 2 | pitch 40, outside m(N+2) = 44, root m(N−2.5) = 35 mm |
 
 ## Project layout
 
 ```
-mechdesign/fourbar.py   linkage kinematics and animation
+app.py                  interactive Streamlit web app
+mechdesign/fourbar.py   linkage kinematics, time ratio and animation
 mechdesign/gears.py     gear-train analysis, interference, designer, drawing
+mechdesign/scenarios.py ready-made real-world presets used by the app
 examples/               scripts that generate every figure in this README
-tests/                  pytest suite (runs on every push via GitHub Actions)
+tests/                  pytest suite, including a smoke test of every app scenario
 ```
 
 ## Limitations and roadmap

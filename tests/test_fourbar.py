@@ -52,3 +52,14 @@ def test_non_grashof_cannot_fully_rotate():
     fb = FourBar(4, 5, 6, 9)
     assert not fb.summary()["full_rotation"]
     assert fb.position(0) is None  # crank along the ground: diagonal 1 < |6 - 9|, coupler and rocker cannot meet
+
+
+def test_time_ratio_matches_sweep():
+    """Closed-form Q must match the crank angles where the swept rocker actually reverses."""
+    fb = FourBar(90, 30, 60, 100)
+    s = fb.sweep(n=36001)
+    th4 = s["th4"]
+    fwd = (s["th2"][np.argmin(th4)] - s["th2"][np.argmax(th4)]) % (2 * np.pi)
+    q = max(fwd, 2 * np.pi - fwd) / min(fwd, 2 * np.pi - fwd)
+    assert fb.time_ratio() == pytest.approx(q, rel=1e-3)
+    assert FourBar(2, 7, 6, 5).time_ratio() is None   # only defined for crank-rockers

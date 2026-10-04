@@ -12,7 +12,8 @@ license = {text = "MIT"}
 dependencies = ["numpy", "matplotlib"]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+app = ["streamlit>=1.50", "plotly", "pandas"]
+dev = ["pytest", "streamlit>=1.50", "plotly", "pandas"]
 
 [tool.setuptools]
 packages = ["mechdesign"]

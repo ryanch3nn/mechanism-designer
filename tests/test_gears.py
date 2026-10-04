@@ -50,3 +50,17 @@ def test_designer_hits_target(target):
 def test_designer_uses_fewest_stages():
     assert len(design_train(4).meshes) == 1
     assert len(design_train(20).meshes) == 2
+
+
+def test_shaft_speeds_and_dimensions():
+    g = GearTrain([(15, 40), (15, 45), (16, 60)])
+    assert g.shaft_speeds(3000)[-1] == pytest.approx(-100)   # 30:1, three external meshes reverse
+    d = GearTrain([(20, 60)], module=2).dimensions()[0]
+    assert (d["pitch_d"], d["outside_d"], d["root_d"]) == (40, 44, 35)   # mN, m(N+2), m(N-2.5)
+
+
+def test_parse_meshes():
+    from mechdesign import parse_meshes
+    assert parse_meshes("15:40, 15-45 16/60") == [(15, 40), (15, 45), (16, 60)]
+    with pytest.raises(ValueError):
+        parse_meshes("forty")

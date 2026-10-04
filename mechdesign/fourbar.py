@@ -96,6 +96,22 @@ class FourBar:
         out["th2"] = th2
         return out
 
+    def time_ratio(self):
+        """Quick-return ratio Q = slow stroke / fast stroke for a crank-rocker (None otherwise).
+
+        The rocker reverses when crank and coupler line up: extended (O2B = r2 + r3) and
+        folded (O2B = r3 - r2). The crank turns pi + delta between those two positions.
+        """
+        if self.grashof()[1] != "crank-rocker":
+            return None
+        r1, r2, r3, r4 = self.links
+
+        def psi(d):  # angle of O2B above the ground line, law of cosines in triangle O2-B-O4
+            return np.arccos(np.clip((r1**2 + d**2 - r4**2) / (2 * r1 * d), -1, 1))
+
+        delta = abs(psi(r2 + r3) - psi(r3 - r2))
+        return float((np.pi + delta) / (np.pi - delta))
+
     def summary(self):
         s = self.sweep()
         ok, kind = self.grashof()

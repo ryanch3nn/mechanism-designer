@@ -51,6 +51,24 @@ class GearTrain:
         return [self.module * (b - a if i in self.internal else a + b) / 2
                 for i, (a, b) in enumerate(self.meshes)]
 
+    def shaft_speeds(self, speed_in_rpm):
+        """Signed speed of every shaft, input first. Negative = opposite direction to the input."""
+        speeds = [float(speed_in_rpm)]
+        for i, (a, b) in enumerate(self.meshes):
+            speeds.append(speeds[-1] * a / b * (1 if i in self.internal else -1))
+        return speeds
+
+    def dimensions(self):
+        """Pitch, outside and root diameter of every gear (full-depth: addendum m, dedendum 1.25m)."""
+        m, rows = self.module, []
+        for i, (a, b) in enumerate(self.meshes):
+            for role, n in (("driver", a), ("driven", b)):
+                ring = role == "driven" and i in self.internal   # teeth point inward on a ring gear
+                rows.append(dict(mesh=i + 1, gear=role, teeth=n, pitch_d=m * n,
+                                 outside_d=m * (n - 2) if ring else m * (n + 2),
+                                 root_d=m * (n + 2.5) if ring else m * (n - 2.5)))
+        return rows
+
     def interference_problems(self):
         """List external meshes whose smaller gear has too few teeth."""
         bad = []
@@ -74,6 +92,17 @@ class GearTrain:
         lines.append("Interference: OK" if not bad else
                      "Interference: " + "; ".join(f"mesh {i}: {n}T < {need}T min" for i, n, need in bad))
         return "\n".join(lines)
+
+
+def parse_meshes(text):
+    """Parse '15:40, 15:45' (also '15-40' or '15/45') into [(15, 40), (15, 45)]."""
+    import re
+    meshes = [(int(a), int(b)) for a, b in re.findall(r"(\d+)\s*[:/\-]\s*(\d+)", text)]
+    if not meshes:
+        raise ValueError("write each mesh as driver:driven, e.g. 15:40, 15:45")
+    if any(n == 0 for mesh in meshes for n in mesh):
+        raise ValueError("tooth counts must be at least 1")
+    return meshes
 
 
 def _valid_pairs(min_teeth, max_teeth, pressure_angle_deg):
